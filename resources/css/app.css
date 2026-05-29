@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #334155;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply min-h-full bg-white text-slate-700 text-sm md:text-base leading-normal;
+  }
+}
+
+@layer components {
+  /* Logos & brand wordmarks */
+  .text-brand {
+    @apply text-lg sm:text-xl md:text-2xl font-black tracking-tight text-slate-800;
+  }
+
+  /* Page / band headings (newsletter, hero, etc.) */
+  .text-section-title {
+    @apply text-base sm:text-lg md:text-xl font-bold text-slate-800 leading-snug;
+  }
+
+  /* Footer column titles, drawer headings */
+  .text-col-title {
+    @apply text-sm sm:text-base font-semibold text-slate-800;
+  }
+
+  /* Nav links, dropdowns, form controls, primary UI copy */
+  .text-ui {
+    @apply text-sm text-slate-700;
+  }
+
+  /* Secondary copy, descriptions, footer links */
+  .text-ui-muted {
+    @apply text-sm text-slate-500;
+  }
+
+  /* Legal, meta, fine print */
+  .text-caption {
+    @apply text-xs text-slate-500 leading-relaxed;
+  }
+
+  /* App store badges, tiny labels */
+  .text-micro {
+    @apply text-[11px] sm:text-xs uppercase tracking-wide text-slate-400 leading-tight;
+  }
+
+  /* Recommended items responsive grid */
+  .recommended-grid {
+    @apply grid grid-cols-2 gap-3;
+  }
+  @media (min-width: 640px) {
+    .recommended-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 768px) {
+    .recommended-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .recommended-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+}
