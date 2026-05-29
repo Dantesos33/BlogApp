@@ -23,7 +23,11 @@ const utilLinks = [
   { href: "/about",   icon: <FaCircleInfo size={15} />,  label: "About" },
 ];
 
-const footerLinks = ["Terms of use", "Write for us", "Privacy policy"];
+const footerLinks = [
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+  { label: "Write a post", href: "/posts/create" },
+];
 
 const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
   return (
@@ -36,7 +40,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
       />
 
       <aside
-        className={`fixed top-0 left-0 h-full w-[75vw] max-w-[300px] bg-white z-70 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 h-full w-[75vw] max-w-75 bg-white z-70 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -99,14 +103,14 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         </nav>
 
         <div className="mt-auto px-5 pb-8 pt-4 border-t border-slate-100 flex flex-col gap-2.5">
-          {footerLinks.map((label) => (
+          {footerLinks.map((item) => (
             <Link
-              key={label}
-              href="#"
+              key={item.label}
+              href={item.href}
               onClick={onClose}
               className="text-caption hover:text-blue-500 transition-colors duration-200"
             >
-              {label}
+              {item.label}
             </Link>
           ))}
         </div>

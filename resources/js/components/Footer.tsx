@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+
 export function Footer() {
     return (
         <footer className="mt-12 border-t border-slate-200 bg-white">
@@ -9,17 +11,17 @@ export function Footer() {
                 <div>
                     <p className="text-col-title">Explore</p>
                     <ul className="mt-3 space-y-2 text-ui-muted">
-                        <li>Latest blogs</li>
-                        <li>Popular reads</li>
-                        <li>Categories</li>
+                        <li><Link href="/posts" className="hover:text-blue-600">Latest blogs</Link></li>
+                        <li><Link href="/categories" className="hover:text-blue-600">Categories</Link></li>
+                        <li><Link href="/bookmarks" className="hover:text-blue-600">Bookmarks</Link></li>
                     </ul>
                 </div>
                 <div>
                     <p className="text-col-title">Contact</p>
                     <ul className="mt-3 space-y-2 text-ui-muted">
-                        <li>hello@blogapp.dev</li>
-                        <li>Write for us</li>
-                        <li>Privacy policy</li>
+                        <li><a href="mailto:hello@blogapp.dev" className="hover:text-blue-600">hello@blogapp.dev</a></li>
+                        <li><Link href="/contact" className="hover:text-blue-600">Contact us</Link></li>
+                        <li><Link href="/about" className="hover:text-blue-600">About BlogApp</Link></li>
                     </ul>
                 </div>
             </div>

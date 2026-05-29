@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/layouts/layout';
 import {
@@ -6,6 +6,7 @@ import {
     FaClock, FaBookmark, FaEye,
 } from 'react-icons/fa';
 import { FaTag } from 'react-icons/fa6';
+import { isBookmarked, toggleBookmark } from '@/lib/postsStorage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -285,7 +286,27 @@ const HeroSlider = () => {
 
 // ─── Post Card ────────────────────────────────────────────────────────────────
 
-const PostCard = ({ post }: { post: Post }) => (
+const PostCard = ({ post }: { post: Post }) => {
+    const { auth } = usePage<{ auth?: { user?: { id?: number } } }>().props;
+    const [bookmarked, setBookmarked] = useState(() => isBookmarked(post.id, auth?.user?.id));
+
+    useEffect(() => {
+        setBookmarked(isBookmarked(post.id, auth?.user?.id));
+    }, [auth?.user?.id, post.id]);
+
+    const handleBookmark = (event: React.MouseEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!auth?.user?.id) {
+            router.visit('/login');
+            return;
+        }
+
+        setBookmarked(toggleBookmark(post.id, auth.user.id));
+    };
+
+    return (
     <Link
         href={`/posts/${post.slug}`}
         className="cursor-pointer group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-blue-200 transition-all duration-300 flex flex-col"
@@ -305,9 +326,9 @@ const PostCard = ({ post }: { post: Post }) => (
                 {post.category}
             </span>
             <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                aria-label="Bookmark"
-                className="cursor-pointer absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 border border-white/60 transition-colors"
+                onClick={handleBookmark}
+                aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
+                className={`cursor-pointer absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/60 transition-colors ${bookmarked ? 'text-blue-600' : 'text-slate-400 hover:text-blue-600'}`}
             >
                 <FaBookmark size={12} />
             </button>
@@ -326,7 +347,8 @@ const PostCard = ({ post }: { post: Post }) => (
             </div>
         </div>
     </Link>
-);
+    );
+};
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
