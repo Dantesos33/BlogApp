@@ -43,7 +43,7 @@ export default function PostCard({ post, canManage = false }: PostCardProps) {
               type="button"
               onClick={handleBookmark}
               aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
-              className={`rounded-full border p-2 transition ${bookmarked ? 'border-blue-200 bg-blue-50 text-blue-600' : 'border-slate-200 bg-white text-slate-400 hover:border-blue-200 hover:text-blue-600'}`}
+              className={`cursor-pointer rounded-full border p-2 transition ${bookmarked ? 'border-blue-200 bg-blue-50 text-blue-600' : 'border-slate-200 bg-white text-slate-400 hover:border-blue-200 hover:text-blue-600'}`}
             >
               <FaBookmark size={12} />
             </button>
@@ -58,7 +58,7 @@ export default function PostCard({ post, canManage = false }: PostCardProps) {
       </Link>
       {canManage ? (
         <div className="flex items-center gap-2 border-t border-slate-100 px-5 py-4">
-          <Link href={`/posts/${post.slug}/edit`} className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">Edit</Link>
+          <Link href={`/posts/${post.slug}/edit`} className="cursor-pointer rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">Edit</Link>
           <button
             type="button"
             onClick={(event) => {
@@ -68,7 +68,7 @@ export default function PostCard({ post, canManage = false }: PostCardProps) {
                 window.location.assign('/posts');
               }
             }}
-            className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-100"
+            className="cursor-pointer rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-100"
           >
             Delete
           </button>

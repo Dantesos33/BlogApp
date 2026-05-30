@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import Layout from '@/layouts/layout';
 
 export default function RegisterPage() {
@@ -16,6 +16,8 @@ export default function RegisterPage() {
       email: data.email,
       password: data.password,
       password_confirmation: data.password_confirmation,
+    }, {
+      onSuccess: () => router.visit('/'),
     });
   };
 

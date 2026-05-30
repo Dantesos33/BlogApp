@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import {
   FaXmark, FaHouse, FaList, FaBookmark,
   FaPenToSquare, FaGlobe, FaHeadset, FaCircleInfo,
@@ -30,6 +30,9 @@ const footerLinks = [
 ];
 
 const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
+  const { auth } = usePage<{ auth?: { user?: { name?: string; email?: string; id?: number } } }>().props;
+  const user = auth?.user;
+
   return (
     <>
       <div
@@ -46,19 +49,29 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-              <FaUser size={16} className="text-slate-400" />
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <FaUser size={16} className="text-slate-400" />
+              </div>
+              <p className="text-ui font-medium leading-tight">
+                {/* Show auth-aware header links */}
+                {user ? (
+                  <>
+                    <span className="block text-sm text-slate-900">{user.name}</span>
+                    <span className="block text-xs text-slate-500">{user.email}</span>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={onClose} className="cursor-pointer hover:text-blue-600 transition-colors">
+                      Sign in
+                    </Link>
+                    <span className="text-slate-300 mx-1">|</span>
+                    <Link href="/register" onClick={onClose} className="cursor-pointer hover:text-blue-600 transition-colors">
+                      Register
+                    </Link>
+                  </>
+                )}
+              </p>
             </div>
-            <p className="text-ui font-medium leading-tight">
-              <Link href="/login" onClick={onClose} className="hover:text-blue-600 transition-colors">
-                Sign in
-              </Link>
-              <span className="text-slate-300 mx-1">|</span>
-              <Link href="/register" onClick={onClose} className="hover:text-blue-600 transition-colors">
-                Register
-              </Link>
-            </p>
-          </div>
           <button
             onClick={onClose}
             aria-label="Close menu"
@@ -74,7 +87,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
               key={item.label}
               href={item.href}
               onClick={onClose}
-              className="flex items-center gap-4 px-5 py-3.5 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 group"
+              className="cursor-pointer flex items-center gap-4 px-5 py-3.5 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 group"
             >
               <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
                 {item.icon}
@@ -92,7 +105,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
               key={item.label}
               href={item.href}
               onClick={onClose}
-              className="flex items-center gap-4 px-5 py-3.5 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 group"
+              className="cursor-pointer flex items-center gap-4 px-5 py-3.5 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 group"
             >
               <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
                 {item.icon}
@@ -103,16 +116,31 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         </nav>
 
         <div className="mt-auto px-5 pb-8 pt-4 border-t border-slate-100 flex flex-col gap-2.5">
-          {footerLinks.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={onClose}
-              className="text-caption hover:text-blue-500 transition-colors duration-200"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {user ? (
+            <>
+              <Link href="/profile" onClick={() => { onClose(); }} className="cursor-pointer text-ui hover:text-blue-500 transition-colors duration-200">Update profile</Link>
+              <Link href="/bookmarks" onClick={() => { onClose(); }} className="cursor-pointer text-ui hover:text-blue-500 transition-colors duration-200">Bookmarks</Link>
+              <Link href="/posts/create" onClick={() => { onClose(); }} className="cursor-pointer text-ui hover:text-blue-500 transition-colors duration-200">Write a post</Link>
+                    <button
+                type="button"
+                onClick={() => { onClose(); router.post('/logout'); }}
+                      className="cursor-pointer text-left text-ui text-rose-600 hover:text-rose-800 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            footerLinks.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={onClose}
+                className="cursor-pointer text-caption hover:text-blue-500 transition-colors duration-200"
+              >
+                {item.label}
+              </Link>
+            ))
+          )}
         </div>
       </aside>
     </>

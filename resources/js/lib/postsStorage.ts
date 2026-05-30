@@ -29,7 +29,16 @@ const writeStoredPosts = (posts: PostItem[]) => {
   window.localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
 };
 
-export const getAllPosts = (): PostItem[] => [...postsData, ...readStoredPosts()];
+export const getAllPosts = (): PostItem[] => {
+  const all = [...postsData, ...readStoredPosts()];
+  // Deduplicate by id in case of localStorage corruption
+  const seen = new Set<number>();
+  return all.filter((post) => {
+    if (seen.has(post.id)) return false;
+    seen.add(post.id);
+    return true;
+  });
+};
 
 export const getBookmarksByUser = (userId?: number): number[] => {
   if (!userId || typeof window === 'undefined') {

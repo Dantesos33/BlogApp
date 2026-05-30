@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import Layout from '@/layouts/layout';
 
 export default function LoginPage() {
@@ -14,6 +14,8 @@ export default function LoginPage() {
       email: data.email,
       password: data.password,
       remember: data.remember,
+    }, {
+      onSuccess: () => router.visit('/'),
     });
   };
 

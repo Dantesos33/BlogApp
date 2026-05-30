@@ -6,7 +6,7 @@ import {
     FaClock, FaBookmark, FaEye,
 } from 'react-icons/fa';
 import { FaTag } from 'react-icons/fa6';
-import { isBookmarked, toggleBookmark } from '@/lib/postsStorage';
+import { isBookmarked, toggleBookmark, getAllPosts } from '@/lib/postsStorage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -291,7 +291,10 @@ const PostCard = ({ post }: { post: Post }) => {
     const [bookmarked, setBookmarked] = useState(() => isBookmarked(post.id, auth?.user?.id));
 
     useEffect(() => {
-        setBookmarked(isBookmarked(post.id, auth?.user?.id));
+        const sync = () => setBookmarked(isBookmarked(post.id, auth?.user?.id));
+        sync();
+        window.addEventListener('blogapp-bookmarks-updated', sync);
+        return () => window.removeEventListener('blogapp-bookmarks-updated', sync);
     }, [auth?.user?.id, post.id]);
 
     const handleBookmark = (event: React.MouseEvent) => {

@@ -8,90 +8,58 @@ import {
     FaEye,
     FaTag,
 } from 'react-icons/fa';
-import { isBookmarked, toggleBookmark } from '@/lib/postsStorage';
+import { isBookmarked, toggleBookmark, getAllPosts } from '@/lib/postsStorage';
 
-interface Post {
-    id: number;
-    slug: string;
-    title: string;
-    category: string;
-    meta: string;
-    excerpt: string;
-    image: string;
-    readTime: string;
-    views: string;
-    author: string;
-    date: string;
-    content: string[];
-}
+const contentMap: Record<string, string[]> = {
+    'clean-homepage-readers': [
+        'A strong homepage does more than show information. It gives readers an immediate sense of clarity, confidence, and direction. When the layout feels calm, people stay longer and explore more deeply.',
+        'In this design approach, the hero space is intentionally spacious, the categories are easy to scan, and the cards guide attention without feeling crowded. Clean pages create trust, and trust creates momentum.',
+        'The result is a reading experience that feels premium, modern, and easy to navigate. That is what turns a simple blog into a memorable editorial destination.',
+    ],
+    'smart-categories-discovery': [
+        'Good discovery starts with well-structured categories. Readers should understand where they are in a few seconds and find similar topics without friction.',
+        'A thoughtful category system reduces decision fatigue, makes browsing more efficient, and invites people to spend more time in your content ecosystem.',
+        'When category labels are clear and consistent, your homepage feels more intentional and easier to trust.',
+    ],
+    'details-premium-blog': [
+        'Premium design is rarely about adding more. It is about refining the details that readers notice without being distracted by them.',
+        'Consistent spacing, bold section labels, thoughtful card proportions, and restrained color help content feel focused instead of noisy.',
+        'These subtle choices create a reading experience that feels intentional and polished from the very first section.',
+    ],
+};
 
-const posts: Post[] = [
-    {
-        id: 1,
-        slug: 'clean-homepage-readers',
-        title: 'Why a clean homepage makes readers stay longer',
-        category: 'Design',
-        meta: 'Design · 6 min read',
-        excerpt: 'Great blog pages balance visual calm, fast scanning, and thoughtful layout to build trust from the very first scroll.',
-        image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400&q=80&fit=crop',
-        readTime: '6 min read',
-        views: '4.2k',
-        author: 'Ava Carter',
-        date: 'May 29, 2026',
-        content: [
-            'A strong homepage does more than show information. It gives readers an immediate sense of clarity, confidence, and direction. When the layout feels calm, people stay longer and explore more deeply.',
-            'In this design approach, the hero space is intentionally spacious, the categories are easy to scan, and the cards guide attention without feeling crowded. Clean pages create trust, and trust creates momentum.',
-            'The result is a reading experience that feels premium, modern, and easy to navigate. That is what turns a simple blog into a memorable editorial destination.',
-        ],
-    },
-    {
-        id: 2,
-        slug: 'smart-categories-discovery',
-        title: 'How smart categories improve discovery for modern blogs',
-        category: 'Productivity',
-        meta: 'Productivity · 5 min read',
-        excerpt: 'Readers browse faster when categories, tags, and search feel intuitive rather than cluttered and hard to navigate.',
-        image: 'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=1400&q=80&fit=crop',
-        readTime: '5 min read',
-        views: '3.8k',
-        author: 'Noah Reed',
-        date: 'May 26, 2026',
-        content: [
-            'Good discovery starts with well-structured categories. Readers should understand where they are in a few seconds and find similar topics without friction.',
-            'A thoughtful category system reduces decision fatigue, makes browsing more efficient, and invites people to spend more time in your content ecosystem.',
-            'When category labels are clear and consistent, your homepage feels more intentional and easier to trust.',
-        ],
-    },
-    {
-        id: 3,
-        slug: 'details-premium-blog',
-        title: 'The small details that make a blog feel premium',
-        category: 'Writing',
-        meta: 'Writing · 4 min read',
-        excerpt: 'Spacing, hierarchy, and clean typography turn a simple page into a memorable editorial experience worth revisiting.',
-        image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1400&q=80&fit=crop',
-        readTime: '4 min read',
-        views: '2.9k',
-        author: 'Maya Stone',
-        date: 'May 24, 2026',
-        content: [
-            'Premium design is rarely about adding more. It is about refining the details that readers notice without being distracted by them.',
-            'Consistent spacing, bold section labels, thoughtful card proportions, and restrained color help content feel focused instead of noisy.',
-            'These subtle choices create a reading experience that feels intentional and polished from the very first section.',
-        ],
-    },
-];
-
-const relatedPosts = posts.slice(0, 3);
+const getDetailContent = (slug: string): string[] => {
+    return contentMap[slug] ?? ['This is a great article. Read it carefully and think about how it applies to your own work.'];
+};
 
 export default function PostDetail({ slug }: { slug: string }) {
     const { auth } = usePage<{ auth?: { user?: { id?: number } } }>().props;
-    const post = posts.find((item) => item.slug === slug) ?? posts[0];
+    const allPosts = getAllPosts();
+    const post = allPosts.find((item) => item.slug === slug);
+    const relatedPosts = allPosts.slice(0, 3);
+    
+    if (!post) {
+        return (
+            <Layout>
+                <Head title="Post not found" />
+                <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-slate-900">Post not found</h1>
+                    <Link href="/" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700">
+                        <FaArrowLeft size={10} /> Back to home
+                    </Link>
+                </div>
+            </Layout>
+        );
+    }
+
     const [bookmarked, setBookmarked] = useState(() => isBookmarked(post.id, auth?.user?.id));
 
     useEffect(() => {
-        setBookmarked(isBookmarked(post.id, auth?.user?.id));
-    }, [auth?.user?.id]);
+        const sync = () => setBookmarked(isBookmarked(post.id, auth?.user?.id));
+        sync();
+        window.addEventListener('blogapp-bookmarks-updated', sync);
+        return () => window.removeEventListener('blogapp-bookmarks-updated', sync);
+    }, [auth?.user?.id, post.id]);
 
     const handleBookmark = (event: React.MouseEvent) => {
         event.preventDefault();
@@ -130,7 +98,7 @@ export default function PostDetail({ slug }: { slug: string }) {
                                 <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200">
                                     <FaTag size={10} /> {post.category}
                                 </span>
-                                <button onClick={handleBookmark} className={`inline-flex h-9 w-9 items-center justify-center rounded-full bg-white border transition-colors ${bookmarked ? 'border-blue-200 text-blue-600' : 'border-slate-200 text-slate-500 hover:text-blue-600'}`} aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}>
+                                <button onClick={handleBookmark} className={`cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-full bg-white border transition-colors ${bookmarked ? 'border-blue-200 text-blue-600' : 'border-slate-200 text-slate-500 hover:text-blue-600'}`} aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}>
                                     <FaBookmark size={12} />
                                 </button>
                             </div>
@@ -161,7 +129,7 @@ export default function PostDetail({ slug }: { slug: string }) {
                 <section className="grid gap-8 lg:grid-cols-[1fr_320px]">
                     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Article</p>
-                        {post.content.map((paragraph) => (
+                        {getDetailContent(post.slug).map((paragraph) => (
                             <p key={paragraph} className="mt-4 text-base leading-8 text-slate-700">{paragraph}</p>
                         ))}
 

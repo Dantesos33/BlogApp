@@ -35,8 +35,11 @@ Route::get('/categories/{category}', function (string $category) {
 Route::inertia('/about', 'about')->name('about');
 Route::inertia('/contact', 'contact')->name('contact');
 
+// Keep a lightweight named dashboard route that redirects to the homepage.
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('/dashboard', function () {
+        return redirect('/');
+    })->name('dashboard');
 });
 
 require __DIR__.'/settings.php';
